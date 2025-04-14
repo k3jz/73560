@@ -39,14 +39,14 @@ uhhh:AddToggle('CFrameSpeedToggle', {
     end,
 })
 
-uhhh:AddSlider("cFrameSpeedToggle", {
-    Text = "cframe",
-    Default = 50,
-    Min = 10,
-    Max = 5000,
+uhhh:AddSlider("CFrameSpeedSlider", {
+    Text = "CFrame Speed",
+    Default = 16,
+    Min = 1,
+    Max = 100,
     Rounding = 0,
     Callback = function(value)
-        getgenv().cFrameSpeed = value
+        getgenv().cframeSpeed = value
     end
 })
 
