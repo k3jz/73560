@@ -835,6 +835,107 @@ task.spawn(function()
         end)
     end
 end)
+-- SERVICES
+local UIS = game:GetService("UserInputService")
+local RunService = game:GetService("RunService")
+
+-- VARIABLES
+local player = game.Players.LocalPlayer
+local character = player.Character or player.CharacterAdded:Wait()
+local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
+
+local flying = false
+local speed = 50 -- Default fly speed
+local flyKey = Enum.KeyCode.F -- Default fly key
+
+-- FLY FUNCTION
+local bodyGyro
+local bodyVelocity
+
+function startFlying()
+    if flying then return end
+    flying = true
+    
+    bodyGyro = Instance.new("BodyGyro")
+    bodyGyro.P = 9e4
+    bodyGyro.Parent = humanoidRootPart
+    bodyGyro.MaxTorque = Vector3.new(400000, 400000, 400000)
+    bodyGyro.CFrame = humanoidRootPart.CFrame
+
+    bodyVelocity = Instance.new("BodyVelocity")
+    bodyVelocity.Velocity = Vector3.zero
+    bodyVelocity.MaxForce = Vector3.new(400000, 400000, 400000)
+    bodyVelocity.Parent = humanoidRootPart
+end
+
+function stopFlying()
+    flying = false
+    if bodyGyro then bodyGyro:Destroy() end
+    if bodyVelocity then bodyVelocity:Destroy() end
+end
+
+function toggleFly()
+    if flying then
+        stopFlying()
+    else
+        startFlying()
+    end
+end
+
+-- INPUT HANDLING
+UIS.InputBegan:Connect(function(input, processed)
+    if processed then return end
+    if input.KeyCode == flyKey then
+        toggleFly()
+    end
+end)
+
+-- UPDATE LOOP
+RunService.RenderStepped:Connect(function()
+    if flying and bodyGyro and bodyVelocity then
+        bodyGyro.CFrame = workspace.CurrentCamera.CFrame
+        local moveDirection = Vector3.zero
+        if UIS:IsKeyDown(Enum.KeyCode.W) then
+            moveDirection = moveDirection + workspace.CurrentCamera.CFrame.LookVector
+        end
+        if UIS:IsKeyDown(Enum.KeyCode.S) then
+            moveDirection = moveDirection - workspace.CurrentCamera.CFrame.LookVector
+        end
+        if UIS:IsKeyDown(Enum.KeyCode.A) then
+            moveDirection = moveDirection - workspace.CurrentCamera.CFrame.RightVector
+        end
+        if UIS:IsKeyDown(Enum.KeyCode.D) then
+            moveDirection = moveDirection + workspace.CurrentCamera.CFrame.RightVector
+        end
+        if UIS:IsKeyDown(Enum.KeyCode.Space) then
+            moveDirection = moveDirection + workspace.CurrentCamera.CFrame.UpVector
+        end
+        if UIS:IsKeyDown(Enum.KeyCode.LeftShift) then
+            moveDirection = moveDirection - workspace.CurrentCamera.CFrame.UpVector
+        end
+        
+        if moveDirection.Magnitude > 0 then
+            bodyVelocity.Velocity = moveDirection.Unit * speed
+        else
+            bodyVelocity.Velocity = Vector3.zero
+        end
+    end
+end)
+
+-- FUNCTIONS FOR YOUR GUI TO CONTROL
+
+function setFlySpeed(newSpeed)
+    speed = newSpeed
+end
+
+function setFlyKeybind(newKeyCode)
+    flyKey = newKeyCode
+end
+
+-- Example usage from your GUI:
+-- setFlySpeed(120)
+-- setFlyKeybind(Enum.KeyCode.E)
+
 
 --// Not Mine, I think lunars? Public bypass so okay
 for _, con in next, getconnections(workspace.CurrentCamera.Changed) do
@@ -861,88 +962,3 @@ for _, con in next, getconnections(workspace.CurrentCamera.Changed) do
     updateKey('indexInstance')
     updateKey('namecallInstance')
 end
-getgenv().FlightKeybind = Enum.KeyCode.X
-getgenv().FlySpeed = 50
-getgenv().FlightEnabled = false
-getgenv().Flying = false
-
-local function CreateCore()
-    if workspace:FindFirstChild("Core") then workspace.Core:Destroy() end
-    local Core = Instance.new("Part")
-    Core.Name = "Core"
-    Core.Size = Vector3.new(0.05, 0.05, 0.05)
-    Core.CanCollide = false
-    Core.Transparency = 1
-    Core.Parent = workspace
-    local Weld = Instance.new("Weld", Core)
-    Weld.Part0 = Core
-    Weld.Part1 = LocalPlayer.Character.HumanoidRootPart
-    Weld.C0 = CFrame.new(0, 0, 0)
-    return Core
-end
-
-local function StartFly()
-    if getgenv().Flying then return end
-    getgenv().Flying = true
-    LocalPlayer.Character:FindFirstChildOfClass("Humanoid").PlatformStand = true
-    local Core = CreateCore()
-    local BV = Instance.new("BodyVelocity", Core)
-    BV.MaxForce = Vector3.new(9e9, 9e9, 9e9)
-    BV.Velocity = Vector3.zero
-    local BG = Instance.new("BodyGyro", Core)
-    BG.MaxTorque = Vector3.new(9e9, 9e9, 9e9)
-    BG.P = 9e4
-    BG.CFrame = Core.CFrame
-    RunService.RenderStepped:Connect(function()
-        if not getgenv().Flying then return end
-        local camera = workspace.CurrentCamera
-        local moveDirection = Vector3.zero
-        if UserInputService:IsKeyDown(Enum.KeyCode.W) then moveDirection = moveDirection + camera.CFrame.LookVector end
-        if UserInputService:IsKeyDown(Enum.KeyCode.S) then moveDirection = moveDirection - camera.CFrame.LookVector end
-        if UserInputService:IsKeyDown(Enum.KeyCode.A) then moveDirection = moveDirection - camera.CFrame.RightVector end
-        if UserInputService:IsKeyDown(Enum.KeyCode.D) then moveDirection = moveDirection + camera.CFrame.RightVector end
-        if UserInputService:IsKeyDown(Enum.KeyCode.Space) then moveDirection = moveDirection + Vector3.new(0, 1, 0) end
-        if UserInputService:IsKeyDown(Enum.KeyCode.LeftControl) then moveDirection = moveDirection - Vector3.new(0, 1, 0) end
-        BV.Velocity = moveDirection * getgenv().FlySpeed
-        BG.CFrame = camera.CFrame
-    end)
-end
-
-local function StopFly()
-    if not getgenv().Flying then return end
-    getgenv().Flying = false
-    LocalPlayer.Character:FindFirstChildOfClass("Humanoid").PlatformStand = false
-    if workspace:FindFirstChild("Core") then workspace.Core:Destroy() end
-end
-
-VIN9:AddToggle("FlightToggle", {
-    Text = "Flight",
-    Default = false,
-    Callback = function(state)
-        getgenv().FlightEnabled = state
-        if not state then StopFly() end
-    end
-}):AddKeyPicker("FlightKeybindPicker", {
-    Default = "X",
-    Text = "Flight",
-    Mode = "Toggle",
-    Callback = function(state)
-        if UserInputService:GetFocusedTextBox() then return end
-        if state and getgenv().FlightEnabled then
-            StartFly()
-        else
-            StopFly()
-        end
-    end
-})
-
-VIN9:AddSlider("FlySpeedSlider", {
-    Text = "Fly Speed",
-    Default = 50,
-    Min = 10,
-    Max = 5000,
-    Rounding = 0,
-    Callback = function(value)
-        getgenv().FlySpeed = value
-    end
-})
