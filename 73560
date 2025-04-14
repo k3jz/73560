@@ -7,7 +7,7 @@ local RunService = game:GetService("RunService")
 
 local player = Players.LocalPlayer
 local character = player.Character or player.CharacterAdded:Wait()
-local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
+local humanoid = character:WaitForChild("Humanoid")
 
 -- Variables
 getgenv().cframeSpeedEnabled = false
@@ -23,6 +23,9 @@ uhhh:AddSlider("CFrameSpeedSlider", {
     Rounding = 0,
     Callback = function(value)
         getgenv().cframeSpeed = value
+        if humanoid then
+            humanoid.WalkSpeed = value
+        end
     end
 })
 
@@ -31,7 +34,12 @@ uhhh:AddToggle('CFrameSpeedToggle', {
     Default = false,
     Callback = function(state)
         getgenv().cframeSpeedEnabled = state
-        if not state then getgenv().cframeSpeedKeybindActive = false end
+        if not state then
+            getgenv().cframeSpeedKeybindActive = false
+            if humanoid then
+                humanoid.WalkSpeed = 16  -- Reset to default speed
+            end
+        end
     end,
 }):AddKeyPicker('CFrameSpeedKeybind', {
     Default = 'T',
@@ -52,7 +60,8 @@ task.spawn(function()
             local moveDirection = humanoid.MoveDirection.Unit
             local speed = getgenv().cframeSpeed
             local deltaTime = task.wait()
-            character:TranslateBy(moveDirection * speed * deltaTime)
+            local targetPosition = character.HumanoidRootPart.Position + moveDirection * speed * deltaTime
+            humanoid:MoveTo(targetPosition)
         end
     end
 end)
