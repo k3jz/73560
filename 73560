@@ -1,22 +1,7 @@
-local repo = 'https://raw.githubusercontent.com/violin-suzutsuki/LinoriaLib/main/'
-local Library = loadstring(game:HttpGet(repo .. 'Library.lua'))()
-local ThemeManager = loadstring(game:HttpGet(repo .. 'addons/ThemeManager.lua'))()
-local SaveManager = loadstring(game:HttpGet(repo .. 'addons/SaveManager.lua'))()
-local Window = Library:CreateWindow({ Title = '                     $73560$        ', AutoShow = true, TabPadding = 15, MenuFadeTime = 0.2 })
-local Tabs = { Main = Window:AddTab('Main'), Character = Window:AddTab('Character'), Visuals = Window:AddTab('Visuals'), Misc = Window:AddTab('Misc'), Players = Window:AddTab('Players'), ['UI Settings'] = Window:AddTab('UI Settings') }
-local GunMods = Tabs.Main:AddRightGroupbox('Gun Mods')
-local KillAura = Tabs.Main:AddRightGroupbox('Combat')
+--// Self leaked
 
-local MenuGroup = Tabs['UI Settings']:AddLeftGroupbox('Menu')
-
-local LocalPlayer = game:GetService('Players').LocalPlayer
-local Players = game:GetService('Players')
-local ReplicatedStorage = game:GetService('ReplicatedStorage')
-local RunService = game:GetService("RunService")
-local UserInputService = game:GetService("UserInputService")
-
-
- Silent = {
+VIN9 = {
+    Silent = {
         ["Enabled"] = false,
 
         ["Prediction"] = 0.138,
@@ -185,69 +170,13 @@ DrawingSection:slider({name = "Transparency", def = 1, max = 1, min = 0.1, round
     VIN9.Target.Drawings.Transparency = Value
 end})
 
---// Roblox Lua Script - Toggleable CFrame Speed Walk with Customizable Key
+CFrameSection:toggle({name = "Enabled", def = false, callback = function(Boolean)
+    cframespeedtoggle = Boolean
+end})
 
--- Services
-local Players = game:GetService("Players")
-local UserInputService = game:GetService("UserInputService")
-local RunService = game:GetService("RunService")
-
-local player = Players.LocalPlayer
-local character = player.Character or player.CharacterAdded:Wait()
-local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
-
--- Variables
-local cframespeedtoggle = false
-local speedvalue = 2
-local keybindActive = false
-local activationKey = Enum.KeyCode.F -- Default activation key
-
--- GUI Setup
-CFrameSection:toggle({
-    name = "Enabled",
-    def = false,
-    callback = function(Boolean)
-        cframespeedtoggle = Boolean
-    end
-})
-
-CFrameSection:slider({
-    name = "Speed",
-    def = 2,
-    min = 1,
-    max = 10,
-    rounding = false,
-    callback = function(Value)
-        speedvalue = Value
-    end
-})
-
-CFrameSection:keybind({
-    name = "Activation Key",
-    mode = "toggle", -- Toggle mode
-    def = Enum.KeyCode.F,
-    callback = function(Key)
-        activationKey = Key
-    end
-})
-
--- Key Press Detection
-UserInputService.InputBegan:Connect(function(input, isProcessed)
-    if isProcessed then return end
-    if input.KeyCode == activationKey then
-        keybindActive = not keybindActive
-    end
-end)
-
--- Main Movement Loop
-RunService.RenderStepped:Connect(function()
-    if cframespeedtoggle and keybindActive and character and humanoidRootPart then
-        local humanoid = character:FindFirstChildOfClass("Humanoid")
-        if humanoid and humanoid.MoveDirection.Magnitude > 0 then
-            humanoidRootPart.CFrame = humanoidRootPart.CFrame + (humanoid.MoveDirection * speedvalue)
-        end
-    end
-end)
+CFrameSection:slider({name = "Speed", def = 2, max = 10, min = 1, rounding = false, callback = function(Value)
+    speedvalue = Value
+end})
 
 TargetSection:toggle({name = "Enabled", def = false, callback = function(Boolean)
     VIN9.Target.Enabled = Boolean
@@ -907,52 +836,31 @@ task.spawn(function()
     end
 end)
 
-getgenv().cframeSpeedEnabled = false, false, false
-getgenv().cframeSpeedKeybindActive = false, false
-getgenv().cframeSpeed = 16, 50, 10
-
-local uhhh = Tabs.Character:AddLeftGroupbox('Movement')
-
-uhhh:AddToggle('CFrameSpeedToggle', {
-    Text = 'cframe',
-    Default = false,
-    Callback = function(state)
-        getgenv().cframeSpeedEnabled = state
-        if not state then getgenv().cframeSpeedKeybindActive = false end
-    end,
-}):AddKeyPicker('CFrameSpeedKeybind', {
-    Default = 'T',
-    Text = 'Cframe',
-    Mode = 'Toggle',
-    Callback = function(state)
-        if game:GetService("UserInputService"):GetFocusedTextBox() then return end
-        if getgenv().cframeSpeedEnabled then getgenv().cframeSpeedKeybindActive = state end
-    end,
-})
-
-uhhh:AddSlider("CFrameSpeedSlider", {
-    Text = "CFrame Speed",
-    Default = 16,
-    Min = 1,
-    Max = 100,
-    Rounding = 0,
-    Callback = function(value)
-        getgenv().cframeSpeed = value
-    end
-})
-
-task.spawn(function()
-    while task.wait(0) do
-        local player = game.Players.LocalPlayer
-        local character = player.Character
-        local humanoid = character and character:FindFirstChild("Humanoid")
-        if getgenv().cframeSpeedEnabled and getgenv().cframeSpeedKeybindActive and character and humanoid and humanoid.MoveDirection.Magnitude > 0 then
-            character:TranslateBy(humanoid.MoveDirection * getgenv().cframeSpeed * task.wait() * 3)
+--// Not Mine, I think lunars? Public bypass so okay
+for _, con in next, getconnections(workspace.CurrentCamera.Changed) do
+    task.wait()
+      con:Disable()
+  end
+  for _, con in next, getconnections(workspace.CurrentCamera:GetPropertyChangedSignal("CFrame")) do
+     task.wait()
+      con:Disable()
+  end
+  
+  for _, key in next, getgc(true) do 
+    local function updateKey(instanceType)
+        if pcall(function() return rawget(key, instanceType) end) and typeof(rawget(key, instanceType)) == 'table' and (rawget(key, instanceType))[1] == 'kick' then
+            key.tvk = {
+                'kick',
+                function() 
+                    return game.Workspace:WaitForChild('')
+                end
+            }
         end
     end
-end)
 
-
+    updateKey('indexInstance')
+    updateKey('namecallInstance')
+end
 getgenv().FlightKeybind = Enum.KeyCode.X
 getgenv().FlySpeed = 50
 getgenv().FlightEnabled = false
@@ -1007,7 +915,7 @@ local function StopFly()
     if workspace:FindFirstChild("Core") then workspace.Core:Destroy() end
 end
 
-uhhh:AddToggle("FlightToggle", {
+VIN9:AddToggle("FlightToggle", {
     Text = "Flight",
     Default = false,
     Callback = function(state)
@@ -1028,7 +936,7 @@ uhhh:AddToggle("FlightToggle", {
     end
 })
 
-uhhh:AddSlider("FlySpeedSlider", {
+VIN9:AddSlider("FlySpeedSlider", {
     Text = "Fly Speed",
     Default = 50,
     Min = 10,
