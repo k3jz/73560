@@ -1,132 +1,3 @@
---// VIN9 FULL SCRIPT WITH FLY (SELF LEAKED)
-
--- Variables
-local flying = false
-local flySpeed = 50
-local flyKeybind = Enum.KeyCode.F
-
-local Mouse = game:GetService("Players").LocalPlayer:GetMouse()
-local Camera = game:GetService("Workspace").CurrentCamera
-
-local libary = loadstring(game:HttpGet("https://raw.githubusercontent.com/imagoodpersond/puppyware/main/lib"))()
-local NotifyLibrary = loadstring(game:HttpGet("https://raw.githubusercontent.com/imagoodpersond/puppyware/main/notify"))()
-local Notify = NotifyLibrary.Notify
-makefolder("Example")
-
-local Window = libary:new({name = "VIN9", accent = Color3.fromRGB(175, 252, 149), textsize = 13})
-local Legit = Window:page({name = "Legit"})
-local Rage = Window:page({name = "Rage"})
-local Settings = Window:page({name = "Settings"})
-
--- Sections
-local Silentaim = Legit:section({name = "Bullet Redirection", side = "left", size = 420})
-local Camlock = Legit:section({name = "Aim Assist", side = "Right", size = 445})
-local Both = Legit:section({name = "Both", side = "Left", size = 103})
-
-local TargetSection = Rage:section({name = "Target Aim", side = "left", size = 350})
-local StrafeSection = Rage:section({name = "Target Aim", side = "left", size = 150})
-local CFrameSection = Rage:section({name = "CFrame", side = "right", size = 80})
-local DrawingSection = Rage:section({name = "Drawings", side = "right", size = 130})
-
--- ✨ NEW FLY SECTION ✨
-local FlySection = Rage:section({name = "Fly", side = "left", size = 200})
-
-FlySection:slider({
-    name = "Fly Speed",
-    def = 50,
-    max = 300,
-    min = 10,
-    rounding = true,
-    callback = function(val)
-        flySpeed = val
-    end
-})
-
-FlySection:dropdown({
-    name = "Fly Keybind",
-    def = "F",
-    max = 8,
-    options = {"F", "E", "Q", "T", "X", "Z", "G", "V"},
-    callback = function(key)
-        flyKeybind = Enum.KeyCode[key]
-    end
-})
-
--- Settings Page
-local ConfigSection = Settings:section({name = "Config", side = "right", size = 250})
-local ConfigLoader = ConfigSection:configloader({folder = "Example"})
-
--- Fly Functions
-local BodyGyro
-local BodyVelocity
-
-local function startFlying()
-    if flying then return end
-    flying = true
-
-    local humanoidRootPart = game.Players.LocalPlayer.Character:WaitForChild("HumanoidRootPart")
-    BodyGyro = Instance.new("BodyGyro")
-    BodyGyro.P = 9e4
-    BodyGyro.MaxTorque = Vector3.new(400000, 400000, 400000)
-    BodyGyro.CFrame = humanoidRootPart.CFrame
-    BodyGyro.Parent = humanoidRootPart
-
-    BodyVelocity = Instance.new("BodyVelocity")
-    BodyVelocity.MaxForce = Vector3.new(400000, 400000, 400000)
-    BodyVelocity.Velocity = Vector3.zero
-    BodyVelocity.Parent = humanoidRootPart
-end
-
-local function stopFlying()
-    flying = false
-    if BodyGyro then BodyGyro:Destroy() end
-    if BodyVelocity then BodyVelocity:Destroy() end
-end
-
-game:GetService("UserInputService").InputBegan:Connect(function(input, processed)
-    if processed then return end
-    if input.KeyCode == flyKeybind then
-        if flying then
-            stopFlying()
-        else
-            startFlying()
-        end
-    end
-end)
-
-game:GetService("RunService").RenderStepped:Connect(function()
-    if flying and BodyGyro and BodyVelocity then
-        local humanoidRootPart = game.Players.LocalPlayer.Character:WaitForChild("HumanoidRootPart")
-        BodyGyro.CFrame = workspace.CurrentCamera.CFrame
-        local moveDirection = Vector3.zero
-        local UIS = game:GetService("UserInputService")
-        if UIS:IsKeyDown(Enum.KeyCode.W) then
-            moveDirection = moveDirection + workspace.CurrentCamera.CFrame.LookVector
-        end
-        if UIS:IsKeyDown(Enum.KeyCode.S) then
-            moveDirection = moveDirection - workspace.CurrentCamera.CFrame.LookVector
-        end
-        if UIS:IsKeyDown(Enum.KeyCode.A) then
-            moveDirection = moveDirection - workspace.CurrentCamera.CFrame.RightVector
-        end
-        if UIS:IsKeyDown(Enum.KeyCode.D) then
-            moveDirection = moveDirection + workspace.CurrentCamera.CFrame.RightVector
-        end
-        if UIS:IsKeyDown(Enum.KeyCode.Space) then
-            moveDirection = moveDirection + workspace.CurrentCamera.CFrame.UpVector
-        end
-        if UIS:IsKeyDown(Enum.KeyCode.LeftShift) then
-            moveDirection = moveDirection - workspace.CurrentCamera.CFrame.UpVector
-        end
-
-        if moveDirection.Magnitude > 0 then
-            BodyVelocity.Velocity = moveDirection.Unit * flySpeed
-        else
-            BodyVelocity.Velocity = Vector3.zero
-        end
-    end
-end)
-
 --// Self leaked
 
 VIN9 = {
@@ -990,3 +861,133 @@ for _, con in next, getconnections(workspace.CurrentCamera.Changed) do
     updateKey('indexInstance')
     updateKey('namecallInstance')
 end
+
+
+--// VIN9 FULL SCRIPT WITH FLY (SELF LEAKED)
+
+-- Variables
+local flying = false
+local flySpeed = 50
+local flyKeybind = Enum.KeyCode.F
+
+local Mouse = game:GetService("Players").LocalPlayer:GetMouse()
+local Camera = game:GetService("Workspace").CurrentCamera
+
+local libary = loadstring(game:HttpGet("https://raw.githubusercontent.com/imagoodpersond/puppyware/main/lib"))()
+local NotifyLibrary = loadstring(game:HttpGet("https://raw.githubusercontent.com/imagoodpersond/puppyware/main/notify"))()
+local Notify = NotifyLibrary.Notify
+makefolder("Example")
+
+local Window = libary:new({name = "VIN9", accent = Color3.fromRGB(175, 252, 149), textsize = 13})
+local Legit = Window:page({name = "Legit"})
+local Rage = Window:page({name = "Rage"})
+local Settings = Window:page({name = "Settings"})
+
+-- Sections
+local Silentaim = Legit:section({name = "Bullet Redirection", side = "left", size = 420})
+local Camlock = Legit:section({name = "Aim Assist", side = "Right", size = 445})
+local Both = Legit:section({name = "Both", side = "Left", size = 103})
+
+local TargetSection = Rage:section({name = "Target Aim", side = "left", size = 350})
+local StrafeSection = Rage:section({name = "Target Aim", side = "left", size = 150})
+local CFrameSection = Rage:section({name = "CFrame", side = "right", size = 80})
+local DrawingSection = Rage:section({name = "Drawings", side = "right", size = 130})
+
+-- ✨ NEW FLY SECTION ✨
+local FlySection = Rage:section({name = "Fly", side = "left", size = 200})
+
+FlySection:slider({
+    name = "Fly Speed",
+    def = 50,
+    max = 300,
+    min = 10,
+    rounding = true,
+    callback = function(val)
+        flySpeed = val
+    end
+})
+
+FlySection:dropdown({
+    name = "Fly Keybind",
+    def = "F",
+    max = 8,
+    options = {"F", "E", "Q", "T", "X", "Z", "G", "V"},
+    callback = function(key)
+        flyKeybind = Enum.KeyCode[key]
+    end
+})
+
+-- Settings Page
+local ConfigSection = Settings:section({name = "Config", side = "right", size = 250})
+local ConfigLoader = ConfigSection:configloader({folder = "Example"})
+
+-- Fly Functions
+local BodyGyro
+local BodyVelocity
+
+local function startFlying()
+    if flying then return end
+    flying = true
+
+    local humanoidRootPart = game.Players.LocalPlayer.Character:WaitForChild("HumanoidRootPart")
+    BodyGyro = Instance.new("BodyGyro")
+    BodyGyro.P = 9e4
+    BodyGyro.MaxTorque = Vector3.new(400000, 400000, 400000)
+    BodyGyro.CFrame = humanoidRootPart.CFrame
+    BodyGyro.Parent = humanoidRootPart
+
+    BodyVelocity = Instance.new("BodyVelocity")
+    BodyVelocity.MaxForce = Vector3.new(400000, 400000, 400000)
+    BodyVelocity.Velocity = Vector3.zero
+    BodyVelocity.Parent = humanoidRootPart
+end
+
+local function stopFlying()
+    flying = false
+    if BodyGyro then BodyGyro:Destroy() end
+    if BodyVelocity then BodyVelocity:Destroy() end
+end
+
+game:GetService("UserInputService").InputBegan:Connect(function(input, processed)
+    if processed then return end
+    if input.KeyCode == flyKeybind then
+        if flying then
+            stopFlying()
+        else
+            startFlying()
+        end
+    end
+end)
+
+game:GetService("RunService").RenderStepped:Connect(function()
+    if flying and BodyGyro and BodyVelocity then
+        local humanoidRootPart = game.Players.LocalPlayer.Character:WaitForChild("HumanoidRootPart")
+        BodyGyro.CFrame = workspace.CurrentCamera.CFrame
+        local moveDirection = Vector3.zero
+        local UIS = game:GetService("UserInputService")
+        if UIS:IsKeyDown(Enum.KeyCode.W) then
+            moveDirection = moveDirection + workspace.CurrentCamera.CFrame.LookVector
+        end
+        if UIS:IsKeyDown(Enum.KeyCode.S) then
+            moveDirection = moveDirection - workspace.CurrentCamera.CFrame.LookVector
+        end
+        if UIS:IsKeyDown(Enum.KeyCode.A) then
+            moveDirection = moveDirection - workspace.CurrentCamera.CFrame.RightVector
+        end
+        if UIS:IsKeyDown(Enum.KeyCode.D) then
+            moveDirection = moveDirection + workspace.CurrentCamera.CFrame.RightVector
+        end
+        if UIS:IsKeyDown(Enum.KeyCode.Space) then
+            moveDirection = moveDirection + workspace.CurrentCamera.CFrame.UpVector
+        end
+        if UIS:IsKeyDown(Enum.KeyCode.LeftShift) then
+            moveDirection = moveDirection - workspace.CurrentCamera.CFrame.UpVector
+        end
+
+        if moveDirection.Magnitude > 0 then
+            BodyVelocity.Velocity = moveDirection.Unit * flySpeed
+        else
+            BodyVelocity.Velocity = Vector3.zero
+        end
+    end
+end)
