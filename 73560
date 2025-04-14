@@ -39,6 +39,17 @@ uhhh:AddToggle('CFrameSpeedToggle', {
     end,
 })
 
+uhhh:AddSlider("cFrameSpeedToggle", {
+    Text = "cframe",
+    Default = 50,
+    Min = 10,
+    Max = 5000,
+    Rounding = 0,
+    Callback = function(value)
+        getgenv().cFrameSpeed = value
+    end
+})
+
 task.spawn(function()
     while task.wait(0) do
         local player = game.Players.LocalPlayer
