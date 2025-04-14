@@ -836,90 +836,47 @@ task.spawn(function()
     end
 end)
 
---// Not Mine, I think lunars? Public bypass so okay
-for _, con in next, getconnections(workspace.CurrentCamera.Changed) do
-    task.wait()
-      con:Disable()
-  end
-  for _, con in next, getconnections(workspace.CurrentCamera:GetPropertyChangedSignal("CFrame")) do
-     task.wait()
-      con:Disable()
-  end
-  
-  for _, key in next, getgc(true) do 
-    local function updateKey(instanceType)
-        if pcall(function() return rawget(key, instanceType) end) and typeof(rawget(key, instanceType)) == 'table' and (rawget(key, instanceType))[1] == 'kick' then
-            key.tvk = {
-                'kick',
-                function() 
-                    return game.Workspace:WaitForChild('')
-                end
-            }
-        end
-    end
-
     updateKey('indexInstance')
     updateKey('namecallInstance')
 end
 
--- ✨ NEW FLY SECTION ✨
-local FlySection = Rage:section({name = "Fly", side = "left", size = 200})
+local player = game.Players.LocalPlayer
+local character = player.Character or player.CharacterAdded:Wait()
+local humanoid = character:WaitForChild("Humanoid")
+local flying = false
+local speed = 50  -- Adjust the speed of flying
 
-FlySection:slider({
-    name = "Fly Speed",
-    def = 50,
-    max = 300,
-    min = 10,
-    rounding = true,
-    callback = function(val)
-        flySpeed = val
-    end
-})
-
-FlySection:dropdown({
-    name = "Fly Keybind",
-    def = "F",
-    max = 8,
-    options = {"F", "E", "Q", "T", "X", "Z", "G", "V"},
-    callback = function(key)
-        flyKeybind = Enum.KeyCode[key]
-    end
-})
-
--- Settings Page
-local ConfigSection = Settings:section({name = "Config", side = "right", size = 250})
-local ConfigLoader = ConfigSection:configloader({folder = "Example"})
-
--- Fly Functions
-local BodyGyro
-local BodyVelocity
+local bodyVelocity = Instance.new("BodyVelocity")
+bodyVelocity.MaxForce = Vector3.new(100000, 100000, 100000)
+bodyVelocity.Velocity = Vector3.new(0, 0, 0)
 
 local function startFlying()
     if flying then return end
     flying = true
 
-    local humanoidRootPart = game.Players.LocalPlayer.Character:WaitForChild("HumanoidRootPart")
-    BodyGyro = Instance.new("BodyGyro")
-    BodyGyro.P = 9e4
-    BodyGyro.MaxTorque = Vector3.new(400000, 400000, 400000)
-    BodyGyro.CFrame = humanoidRootPart.CFrame
-    BodyGyro.Parent = humanoidRootPart
-
-    BodyVelocity = Instance.new("BodyVelocity")
-    BodyVelocity.MaxForce = Vector3.new(400000, 400000, 400000)
-    BodyVelocity.Velocity = Vector3.zero
-    BodyVelocity.Parent = humanoidRootPart
+    -- Add a BodyVelocity to the character's humanoid root part
+    bodyVelocity.Parent = character:WaitForChild("HumanoidRootPart")
 end
 
 local function stopFlying()
+    if not flying then return end
     flying = false
-    if BodyGyro then BodyGyro:Destroy() end
-    if BodyVelocity then BodyVelocity:Destroy() end
+
+    -- Remove the BodyVelocity to stop flying
+    bodyVelocity.Parent = nil
 end
 
-game:GetService("UserInputService").InputBegan:Connect(function(input, processed)
-    if processed then return end
-    if input.KeyCode == flyKeybind then
+local function updateFlying()
+    if flying then
+        -- Update the velocity to make the player fly
+        bodyVelocity.Velocity = character.HumanoidRootPart.CFrame.LookVector * speed
+    end
+end
+
+-- Toggle flying on and off when pressing 'v'
+local userInputService = game:GetService("UserInputService")
+userInputService.InputBegan:Connect(function(input)
+    if input.KeyCode == Enum.KeyCode.v then
         if flying then
             stopFlying()
         else
@@ -928,36 +885,7 @@ game:GetService("UserInputService").InputBegan:Connect(function(input, processed
     end
 end)
 
-game:GetService("RunService").RenderStepped:Connect(function()
-    if flying and BodyGyro and BodyVelocity then
-        local humanoidRootPart = game.Players.LocalPlayer.Character:WaitForChild("HumanoidRootPart")
-        BodyGyro.CFrame = workspace.CurrentCamera.CFrame
-        local moveDirection = Vector3.zero
-        local UIS = game:GetService("UserInputService")
-        if UIS:IsKeyDown(Enum.KeyCode.W) then
-            moveDirection = moveDirection + workspace.CurrentCamera.CFrame.LookVector
-        end
-        if UIS:IsKeyDown(Enum.KeyCode.S) then
-            moveDirection = moveDirection - workspace.CurrentCamera.CFrame.LookVector
-        end
-        if UIS:IsKeyDown(Enum.KeyCode.A) then
-            moveDirection = moveDirection - workspace.CurrentCamera.CFrame.RightVector
-        end
-        if UIS:IsKeyDown(Enum.KeyCode.D) then
-            moveDirection = moveDirection + workspace.CurrentCamera.CFrame.RightVector
-        end
-        if UIS:IsKeyDown(Enum.KeyCode.Space) then
-            moveDirection = moveDirection + workspace.CurrentCamera.CFrame.UpVector
-        end
-        if UIS:IsKeyDown(Enum.KeyCode.LeftShift) then
-            moveDirection = moveDirection - workspace.CurrentCamera.CFrame.UpVector
-        end
-
-        if moveDirection.Magnitude > 0 then
-            BodyVelocity.Velocity = moveDirection.Unit * flySpeed
-        else
-            BodyVelocity.Velocity = Vector3.zero
-        end
-    end
+-- Update flying while holding 'W' (or any other directional key you prefer)
+game:GetService("RunService").Heartbeat:Connect(function()
+    updateFlying()
 end)
-
