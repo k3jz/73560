@@ -16,9 +16,9 @@ local RunService = game:GetService("RunService")
 local UserInputService = game:GetService("UserInputService")
 
 
-getgenv().cframeSpeedEnabled = false, false, false
-getgenv().cframeSpeedKeybindActive = false, false
-getgenv().cframeSpeed = 16, 50, 10
+getgenv().walkSpeedEnabled, getgenv().jumpPowerEnabled, getgenv().cframeSpeedEnabled = false, false, false
+getgenv().walkSpeedKeybindActive, getgenv().cframeSpeedKeybindActive = false, false
+getgenv().walkSpeed, getgenv().jumpPower, getgenv().cframeSpeed = 16, 50, 10
 
 local uhhh = Tabs.Character:AddLeftGroupbox('Movement')
 
