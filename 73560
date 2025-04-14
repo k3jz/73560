@@ -839,39 +839,3 @@ end)
     updateKey('indexInstance')
     updateKey('namecallInstance')
 end
-
--- Fly Coding
-local FlyToggle = false
-local FlySpeed = 20
-local FlyHeight = 0
-
-local function Fly(direction)
-    local cameraCFrame = game.Workspace.CurrentCamera.CFrame
-    local targetCFrame = CFrame.new(cameraCFrame.p, cameraCFrame.p + direction * FlySpeed)
-
-    if FlyHeight ~= 0 then
-        targetCFrame = CFrame.new(targetCFrame.p, targetCFrame.p + Vector3.new(0, FlyHeight, 0))
-    end
-
-    game.Workspace.CurrentCamera.CFrame = targetCFrame
-end
-
-game:GetService("UserInputService").JumpEvent:Connect(function()
-    if FlyToggle then
-        Fly(Vector3.new(0, 1, 0))
-    end
-end)
-
-game:GetService("UserInputService").KeyDown:Connect(function(key)
-    if FlyToggle then
-        if key == "w" then
-            Fly(Vector3.new(0, 0, -1))
-        elseif key == "a" then
-            Fly(Vector3.new(-1, 0, 0))
-        elseif key == "s" then
-            Fly(Vector3.new(0, 0, 1))
-        elseif key == "d" then
-            Fly(Vector3.new(1, 0, 0))
-        end
-    end
-end)
